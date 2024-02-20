@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import fs from 'fs';
+import fs from 'fs/promises';
 import { randomUUID }  from 'node:crypto';
 import { fileURLToPath } from 'url';
 import path from 'path';
@@ -13,15 +13,20 @@ const router = Router();;
 let products = [];
 
 //Cargo los datos del JSON al comienzo
-try {
-    const productsData = fs.readFileSync(pathProducts, "utf-8");
-    products = JSON.parse(productsData);
-} catch (error) {
-    console.error("Error loading products data:", error);
+async function loadProductsData(){
+    try {
+        const productsData = await fs.readFile(pathProducts, "utf-8");
+        products = JSON.parse(productsData);
+    } catch (error) {
+        console.error("Error loading products data:", error);
+    }
 }
 
+//Llamo a la función para cargar los datos
+loadProductsData();
+
 //Routes
-router.get('/api/products/', (req, res) => {
+router.get('/api/products/', async (req, res) => {
     //(GET) Mostrar todos los productos
     let limit = req.query.limit;
     limit = parseInt(limit);
@@ -30,11 +35,16 @@ router.get('/api/products/', (req, res) => {
         limit = null;
     }
 
-    if (limit !== null) {
-        const limitedProducts = products.slice(0, limit);
-        res.send(limitedProducts);
-    } else {
-        res.send(products);
+    try{
+        if (limit !== null) {
+            const limitedProducts = products.slice(0, limit);
+            res.send(limitedProducts);
+        } else {
+            res.send(products);
+        }
+    }catch (error){
+        console.error("Error loading products:", error);
+        res.status(500).send({ error: 'Internal Server Error.' });
     }
 });
 
@@ -52,22 +62,22 @@ router.get('/api/products/:pid/', (req, res) => {
 router.post('/api/products/', (req, res) => {
     //(POST) Crear producto nuevo
     const { title, description, code, price, status, stock, category, thumbnails } = req.body;
-    if(!title || !description || !code || !price || !status || !stock || !category){
+    if(!title || !description || !code || !price || status === undefined || !stock || !category){
         return res.status(400).send({ error: 'All fields are required.'})
     }
     const newProduct = {
         id: randomUUID(),
-        title,
-        description, 
-        code,
-        price,
-        status,
-        stock,
-        category,
+        title: title,
+        description: description, 
+        code: code,
+        price: price,
+        status: statusBoolean,
+        stock: stock,
+        category: category,
         thumbnails: thumbnails || []
     };
     products.push(newProduct);
-    fs.writeFileSync(pathProducts, JSON.stringify(products));
+    fs.writeFile(pathProducts, JSON.stringify(products));
     res.status(201).send(newProduct);
 });
 
