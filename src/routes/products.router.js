@@ -23,7 +23,19 @@ try {
 //Routes
 router.get('/api/products/', (req, res) => {
     //(GET) Mostrar todos los productos
-    res.send(products);
+    let limit = req.query.limit;
+    limit = parseInt(limit);
+
+    if (isNaN(limit)) {
+        limit = null;
+    }
+
+    if (limit !== null) {
+        const limitedProducts = products.slice(0, limit);
+        res.send(limitedProducts);
+    } else {
+        res.send(products);
+    }
 });
 
 router.get('/api/products/:pid/', (req, res) => {
