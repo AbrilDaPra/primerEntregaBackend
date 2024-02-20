@@ -1,9 +1,15 @@
 import { Router } from 'express';
 import fs from 'fs';
 import { randomUUID }  from 'node:crypto';
+import { fileURLToPath } from 'url';
+import path from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const pathCart = path.join(__dirname, '../database/cart.json');
 
 const router = Router();
-const pathCart = "./database/cart.json";
 let carts = [];
 
 //Cargo los datos del JSON al comienzo
