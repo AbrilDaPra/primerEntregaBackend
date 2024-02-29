@@ -31,7 +31,7 @@ router.get('/api/products/:pid/', async (req, res) => {
     //(GET) Mostrar producto que coincida con :pid
     try {
         const productId = req.params.pid;
-        const product = await productManager.getProductById(productId);
+        const product = await productManager.getProductsById(productId);
         if (product) {
             res.send(product);
         } else {

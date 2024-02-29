@@ -1,9 +1,9 @@
 import path from 'path';
 import { randomUUID }  from 'node:crypto';
+import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-// const pathProducts = path.join(__dirname, './src/database/products.json');
 
 class ProductManager {
     constructor(){
