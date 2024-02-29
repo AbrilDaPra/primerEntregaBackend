@@ -3,6 +3,7 @@ import fs from 'fs/promises';
 import { randomUUID }  from 'node:crypto';
 import { fileURLToPath } from 'url';
 import path from 'path';
+import ProductManager from '../../ProductManager.js'
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
