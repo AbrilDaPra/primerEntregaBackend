@@ -86,3 +86,27 @@ router.post('/api/carts/:cid/product/:pid', (req, res) => {
 });
 
 export default router;
+
+router.post('/api/carts/', (req, res) => {
+    try{
+        res.status(200).send(await cart.createCart());
+    } catch (err) {
+        res.status(500).send({ err: err.message });
+    }
+})
+
+router.get('/api/carts/:cid/', (req, res) => {
+    try{
+        res.status(200).send(await products.cartContent());
+    } catch (err) {
+        res.status(500).send({ err: err.message });
+    }
+})
+
+router.post('/api/carts/:cid/product/:pid/', (req, res) => {
+    try{
+        res.status(200).send(await products.addProductToCart());
+    } catch (err) {
+        res.status(500).send({ err: err.message });
+    }
+})
