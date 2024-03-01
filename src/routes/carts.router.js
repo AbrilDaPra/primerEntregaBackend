@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import CartManager from '../../CartManager.js';
+// import io from '../app.js';
 
 const router = Router();
 const cartManager = new CartManager();
@@ -35,6 +36,7 @@ router.post('/api/carts/:cid/product/:pid', async (req, res) => {
         const cid = req.params.cid;
 
         const message = await cartManager.addProductToCart(cid, pid);
+        // io.emit('productAddedToCart', { cartId: cid, productId: pid });
         res.send({ message });
     } catch (err) {
         console.error("Error adding product to cart:", err);

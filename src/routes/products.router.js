@@ -1,5 +1,6 @@
 import { Router } from 'express';
-import ProductManager from '../../ProductManager.js'
+import ProductManager from '../../ProductManager.js';
+import { io } from '../app.js';
 
 const router = Router();
 const productManager = new ProductManager();
@@ -48,6 +49,7 @@ router.post('/api/products/', async (req, res) => {
     try {
         const product = req.body;
         const message = await productManager.addProduct(product);
+        io.emit('productCreated', product);
         res.status(201).send({ message });
     } catch (error) {
         console.error("Error creating product:", error);
@@ -73,6 +75,7 @@ router.delete('/api/products/:pid/', async (req, res) => {
     try {
         const productId = req.params.pid;
         await productManager.deleteProduct(productId);
+        io.emit('productDeleted', productId);
         res.send({ message: 'Product deleted.' });
     } catch (error) {
         console.error("Error deleting product:", error);

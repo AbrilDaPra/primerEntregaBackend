@@ -10,6 +10,9 @@ import path from 'path';
 const app = express();
 const port = 8080;
 
+//MANEJO LA LOGICA PARA ESCUCHAR Y EMITIR EVENTOS WEBSOCKET
+//NOTIFICA A LOS CLIENTES SOBRE CAMBIOS EN PROD O CARR
+
 //Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended:true }));
@@ -31,6 +34,7 @@ const server = app.listen(port, console.log("Server listening on port:", port));
 //Instanciando socket.io
 const io = new Server(server);
 
+//Manejo de eventos WebSocket
 io.on('connection', socket => {
     console.log("Connected!");
     socket.on('message', (data) => {
@@ -38,3 +42,5 @@ io.on('connection', socket => {
         // io.emit('log', data);
     })
 })
+
+export { io };

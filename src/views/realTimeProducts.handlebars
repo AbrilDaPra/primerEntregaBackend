@@ -1,0 +1,19 @@
+<div>
+    <h1>Products list in real time</h1>
+    <ul id="realTimeProducts">
+        {{#each products}}
+            <li>{{product}}</li>
+        {{/each}}
+    </ul>
+</div>
+<script>
+    const socket = io();
+
+    socket.on('productCreated', (product) => {
+        console.log("New product created:", product);
+    });
+
+    socket.on('productDeleted', (productId) => {
+        console.log("Product deleted:", productId);
+    });
+</script>

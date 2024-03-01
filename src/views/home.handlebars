@@ -1,7 +1,10 @@
-<div>
-    <h1>Home</h1>
-    <input type="textbox">
-    <p id="log"></p>
+<div class="container">
+    <h1>Products list</h1>
+    <ul>
+        {{#each products}}
+            <li>{{products}}</li>
+        {{/each}}
+    </ul>
 </div>
 
 <script src="/socket.io/socket.io.js"></script>
