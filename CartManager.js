@@ -1,9 +1,4 @@
-import path from 'path';
 import { randomUUID }  from 'node:crypto';
-import { fileURLToPath } from 'url';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 class CartManager{
     constructor(){
@@ -49,7 +44,7 @@ class CartManager{
             });
         }
 
-        return "Product added to cart."
+        return "Product added to cart.";
     }
 }
 

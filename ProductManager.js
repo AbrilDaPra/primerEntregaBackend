@@ -1,9 +1,4 @@
-import path from 'path';
 import { randomUUID }  from 'node:crypto';
-import { fileURLToPath } from 'url';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 class ProductManager {
     constructor(){
@@ -27,11 +22,11 @@ class ProductManager {
     async addProduct(product) {
         try{
             if(this.products.some(existingProduct => existingProduct.code === product.code)) {
-                throw new Error ("Ya existe un producto con ese código.");
+                throw new Error ("A product already exists with that code.");
             }
 
             if(!product.title || !product.description || !product.code || !product.price || !product.status || !product.stock || !product.category) {
-                throw new Error ("Todos los campos deben ser completados.");
+                throw new Error ("All fields must be completed.");
             }
 
             const newProduct = {
@@ -40,9 +35,9 @@ class ProductManager {
             };
 
             this.products.push(newProduct);
-            return "El producto fue agregado correctamente."
+            return "The product was added correctly."
         } catch (err) {
-            throw new Error("Hubo un error al intentar agregar el producto.");
+            throw new Error("There was an error when trying to add the product to the cart.");
         }
     }
 
@@ -51,9 +46,9 @@ class ProductManager {
 
         if(indexToUpdate !== -1) {
             Object.assign(this.products[indexToUpdate], updatedFields);
-            console.log("Producto actualizado correctamente.")
+            console.log("Product updated correctly.")
         } else {
-            throw new Error("No se encontró un producto con el ID especificado.")
+            throw new Error("A product with the specified ID was not found.")
         }
     }
 
@@ -63,12 +58,12 @@ class ProductManager {
 
             if(indexToDelete !== -1) {
                 this.products.splice(indexToDelete, 1);
-                console.log("Producto eliminado correctamente");
+                console.log("Product deleted correctly.");
             } else {
-                console.error("No se pudo eliminar porque no se encontró un producto con ese ID");
+                console.error("Could not delete because a product with that ID was not found.");
             } 
         } catch (err) {
-            console.error("Error al intentar eliminar el producto:", err.message);
+            console.error("Error when trying to delete the product:", err.message);
         }
     }
 }
