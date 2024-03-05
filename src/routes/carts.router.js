@@ -4,7 +4,7 @@ import CartManager from '../../CartManager.js';
 const router = Router();
 const cartManager = new CartManager();
 
-router.post('/api/carts/', async (req, res) => {
+router.post('/', async (req, res) => {
     //(POST) Crear un nuevo carrito
     try{
         const newCart = await cartManager.createCart();
@@ -15,7 +15,7 @@ router.post('/api/carts/', async (req, res) => {
     }
 });
 
-router.get('/api/carts/:cid/', async (req, res) => {
+router.get('/:cid/', async (req, res) => {
     //(GET) Listar los productos del carrito que corresponda a su id de carrito
     try{
         const cid = req.params.cid;
@@ -27,7 +27,7 @@ router.get('/api/carts/:cid/', async (req, res) => {
     }
 });
 
-router.post('/api/carts/:cid/product/:pid', async (req, res) => {
+router.post('/:cid/product/:pid', async (req, res) => {
     //(POST) Agregar un producto nuevo al carrito seleccionado
     try{
         //Obtengo el id de producto y carrito

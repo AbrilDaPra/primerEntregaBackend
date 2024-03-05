@@ -28,7 +28,7 @@ router.get('/', async (req, res) => {
     }
 });
 
-router.get('/api/products/:pid/', async (req, res) => {
+router.get('/:pid/', async (req, res) => {
     //(GET) Mostrar producto que coincida con :pid
     try {
         const productId = req.params.pid;
@@ -44,7 +44,7 @@ router.get('/api/products/:pid/', async (req, res) => {
     }
 });
 
-router.post('/api/products/', async (req, res) => {
+router.post('/', async (req, res) => {
     //(POST) Crear producto nuevo
     try {
         const product = req.body;
@@ -57,7 +57,7 @@ router.post('/api/products/', async (req, res) => {
     }
 });
 
-router.put('/api/products/:pid/', async (req, res) => {
+router.put('/:pid/', async (req, res) => {
     //(PUT) Editar producto que coincida con :pid
     try {
         const productId = req.params.pid;
@@ -70,7 +70,7 @@ router.put('/api/products/:pid/', async (req, res) => {
     }
 });
 
-router.delete('/api/products/:pid/', async (req, res) => {
+router.delete('/:pid/', async (req, res) => {
     //(DELETE) Eliminar producto que coincida con :pid
     try {
         const productId = req.params.pid;

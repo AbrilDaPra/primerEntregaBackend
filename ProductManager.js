@@ -1,8 +1,27 @@
 import { randomUUID }  from 'node:crypto';
+import fs from 'fs/promises';
 
 class ProductManager {
     constructor(){
         this.products = [];
+        this.productsFilePath = 'database/products.json';
+    }
+
+    async loadProductsFromFile() {
+        try{
+            const productsData = await fs.readFile(this.productsFilePath, 'utf-8');
+            this.products = JSON.parse(productsData);
+        } catch (err) {
+            console.error('Error loading products from file:', err);
+        }
+    }
+
+    async saveProductsToFile() {
+        try{
+            await fs.writeFile(this.productsFilePath, JSON.stringify(this.products, null, 2));
+        } catch (err) {
+            console.error('Error saving products to file:', err);
+        }
     }
 
     async getProducts() {
@@ -35,6 +54,9 @@ class ProductManager {
             };
 
             this.products.push(newProduct);
+
+            await this.saveProductsToFile();
+
             return "The product was added correctly."
         } catch (err) {
             throw new Error("There was an error when trying to add the product to the cart.");
@@ -46,6 +68,7 @@ class ProductManager {
 
         if(indexToUpdate !== -1) {
             Object.assign(this.products[indexToUpdate], updatedFields);
+            await this.saveProductsToFile();
             console.log("Product updated correctly.")
         } else {
             throw new Error("A product with the specified ID was not found.")
@@ -58,6 +81,7 @@ class ProductManager {
 
             if(indexToDelete !== -1) {
                 this.products.splice(indexToDelete, 1);
+                await this.saveProductsToFile();
                 console.log("Product deleted correctly.");
             } else {
                 console.error("Could not delete because a product with that ID was not found.");

@@ -27,8 +27,8 @@ app.engine('handlebars', handlebars.engine());
 app.set('view engine', 'handlebars');
 
 //Routes
-app.use('/api/products', productsRouter);
-app.use('/api/carts', cartsRouter);
+app.use('/api/products/', productsRouter);
+app.use('/api/carts/', cartsRouter);
 app.use('/', viewRouter);
 
 //Creo servidor HTTP utilizando Express
