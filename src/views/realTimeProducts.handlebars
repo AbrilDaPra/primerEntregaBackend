@@ -2,7 +2,15 @@
     <h1>Products list in real time</h1>
     <ul id="realTimeProducts">
         {{#each products}}
-            <li>{{product}}</li>
+            <li>
+                {{title}} - 
+                {{description}} - 
+                {{code}} - 
+                {{price}} - 
+                {{status}} - 
+                {{stock}} - 
+                {{category}}
+            </li>
         {{/each}}
     </ul>
 </div>

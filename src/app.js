@@ -5,6 +5,7 @@ import viewRouter from './routes/view.router.js';
 import handlebars from 'express-handlebars';
 import __dirname from './utils.js';
 import { Server } from 'socket.io';
+import http from 'http';
 import path from 'path';
 
 const app = express();
@@ -26,11 +27,13 @@ app.engine('handlebars', handlebars.engine());
 app.set('view engine', 'handlebars');
 
 //Routes
-app.use(productsRouter);
-app.use(cartsRouter);
-app.use(viewRouter);
+app.use('/api/products', productsRouter);
+app.use('/api/carts', cartsRouter);
+app.use('/', viewRouter);
 
-const server = app.listen(port, console.log("Server listening on port:", port));
+//Creo servidor HTTP utilizando Express
+const server = http.createServer(app);
+
 //Instanciando socket.io
 const io = new Server(server);
 
@@ -39,8 +42,12 @@ io.on('connection', socket => {
     console.log("Connected!");
     socket.on('message', (data) => {
         console.log(data);
-        // io.emit('log', data);
     })
 })
 
 export { io };
+
+//Arranco el servidor HTTP
+server.listen(port, () => {
+    console.log("Server listening on port:", port);
+});

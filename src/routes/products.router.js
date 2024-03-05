@@ -5,7 +5,7 @@ import { io } from '../app.js';
 const router = Router();
 const productManager = new ProductManager();
 
-router.get('/api/products/', async (req, res) => {
+router.get('/', async (req, res) => {
     //(GET) Mostrar todos los productos
     try {
         const products = await productManager.getProducts();
@@ -49,7 +49,7 @@ router.post('/api/products/', async (req, res) => {
     try {
         const product = req.body;
         const message = await productManager.addProduct(product);
-        io.emit('productCreated', product);
+        io.emit("productCreated", product);
         res.status(201).send({ message });
     } catch (error) {
         console.error("Error creating product:", error);
