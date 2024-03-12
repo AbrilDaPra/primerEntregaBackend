@@ -1,6 +1,7 @@
 import { randomUUID }  from 'node:crypto';
 import fs from 'fs/promises';
 
+let products = [];
 class ProductManager {
     constructor(){
         this.products = [];
@@ -40,11 +41,24 @@ class ProductManager {
 
     async addProduct(product) {
         try{
-            if(this.products.some(existingProduct => existingProduct.code === product.code)) {
+            await this.loadProductsFromFile();
+            if(
+                this.products.some(
+                    (existingProduct) => existingProduct.code === product.code
+                )
+            ) {
                 throw new Error ("A product already exists with that code.");
             }
 
-            if(!product.title || !product.description || !product.code || !product.price || !product.status || !product.stock || !product.category) {
+            if(
+                !product.title || 
+                !product.description || 
+                !product.code || 
+                !product.price || 
+                !product.status || 
+                !product.stock || 
+                !product.category
+            ) {
                 throw new Error ("All fields must be completed.");
             }
 
@@ -92,4 +106,10 @@ class ProductManager {
     }
 }
 
-export default ProductManager;
+export const addProduct = (newProduct) => {
+    products.push(newProduct);
+}
+
+export const getAllProducts = () => {
+    return products;
+}

@@ -7,6 +7,7 @@ import __dirname from './utils.js';
 import { Server } from 'socket.io';
 import http from 'http';
 import path from 'path';
+import productManager from '../ProductManager.js';
 
 const app = express();
 const port = 8080;
@@ -37,12 +38,15 @@ const server = http.createServer(app);
 //Instanciando socket.io
 const io = new Server(server);
 
+const productManager = new ProductManager();
 //Manejo de eventos WebSocket
-io.on('connection', socket => {
+io.on('connection', async (socket) => {
     console.log("Connected!");
     socket.on('message', (data) => {
         console.log(data);
-    })
+    });
+    const products = await productManager.getProducts();
+    socket.emit('products', products);
 })
 
 export { io };

@@ -1,27 +1,6 @@
 <div>
     <h1>Products list in real time</h1>
-    <ul id="realTimeProducts">
-        {{#each products}}
-            <li>
-                {{title}} - 
-                {{description}} - 
-                {{code}} - 
-                {{price}} - 
-                {{status}} - 
-                {{stock}} - 
-                {{category}}
-            </li>
-        {{/each}}
-    </ul>
+    <ul id="realTimeProducts"></ul>
 </div>
-<script>
-    const socket = io();
-
-    socket.on('productCreated', (product) => {
-        console.log("New product created:", product);
-    });
-
-    socket.on('productDeleted', (productId) => {
-        console.log("Product deleted:", productId);
-    });
-</script>
+<script src="/socket.io/socket.io.js"></script>
+<script src="../public/js/home.js"></script>

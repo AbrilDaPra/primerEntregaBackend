@@ -47,10 +47,10 @@ router.get('/:pid/', async (req, res) => {
 router.post('/', async (req, res) => {
     //(POST) Crear producto nuevo
     try {
-        const product = req.body;
-        const message = await productManager.addProduct(product);
+        const newProduct = req.body;
+        const product = await productManager.addProduct(newProduct);
         io.emit("productCreated", product);
-        res.status(201).send({ message });
+        res.status(201).json(product);
     } catch (error) {
         console.error("Error creating product:", error);
         res.status(400).send({ error: error.message });

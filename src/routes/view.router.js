@@ -11,8 +11,8 @@ const productsPath = path.join(__dirname, 'database', 'products.json');
 
 router.get('/', (req, res) => {
     //Leo los datos de productos desde el JSON
-    const productsData = fs.readFileSync(productsPath, 'utf-8');
-    const products = JSON.parse(productsData);
+    // const productsData = fs.readFileSync(productsPath, 'utf-8');
+    // const products = JSON.parse(productsData);
 
     //Aca lo renderizo en home
     res.render('home', { products: products });
@@ -20,11 +20,11 @@ router.get('/', (req, res) => {
 
 router.get('/realtimeproducts', (req, res) => {
     //Leo los datos de productos desde el JSON
-    const productsData = fs.readFileSync(productsPath, 'utf-8');
-    const products = JSON.parse(productsData);
+    // const productsData = fs.readFileSync(productsPath, 'utf-8');
+    // const products = JSON.parse(productsData);
 
     //Aca lo renderizo en home
-    res.render('realTimeProducts', { products: products });
+    res.render('realTimeProducts');
 });
 
 export default router;
