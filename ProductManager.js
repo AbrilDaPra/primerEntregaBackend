@@ -113,3 +113,5 @@ export const addProduct = (newProduct) => {
 export const getAllProducts = () => {
     return products;
 }
+
+export default ProductManager;
