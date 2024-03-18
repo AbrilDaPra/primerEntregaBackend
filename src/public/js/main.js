@@ -1,3 +1,13 @@
+
+
+
+
+
+
+
+
+
+const socket = io();
 const realTimeProducts = document.getElementById("realTimeProducts");
 
 socket.on('products', (productsData) => {

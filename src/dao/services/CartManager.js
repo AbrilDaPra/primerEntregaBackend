@@ -1,3 +1,9 @@
+import mongoose from 'mongoose';
+import cartsModel from '../models/carts.model.js';
+
+
+
+
 import { randomUUID }  from 'node:crypto';
 
 class CartManager{
