@@ -1,9 +1,29 @@
-import { Router } from 'express';
 import ProductManager from '../dao/services/ProductManager.js';
+import express from 'express';
 import { io } from '../app.js';
 
-const router = Router();
+const router = express.Router();
 const productManager = new ProductManager();
+
+router.get('/all', (req, res) => {
+    let limit = req.query;
+    let data = productManager.getProducts(limit);
+    res.json({data})
+})
+
+router.post('/add', (req, res) => {
+    // const {title, description, code, category, brand, price, stock, status, thumnails} = req.body;
+    const newProduct = req.body;
+    let result = productManager.addProduct(newProduct);
+    res.json({result});
+})
+
+
+
+
+
+
+
 
 router.get('/', async (req, res) => {
     //(GET) Mostrar todos los productos
