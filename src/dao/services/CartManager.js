@@ -1,23 +1,21 @@
 import cartsModel from '../models/carts.model.js';
 
 class CartManager {
-    constructor(){
+    constructor(){}
 
-    }
-
-    createCart = async() => {
+    async createCart() {
         let result = await cartsModel.create({});
         return result;
     }
 
-    getCartById = async(id) => {
-        let result = await cartsModel.findById(id);
+    async getCartById(cid) {
+        let result = await cartsModel.findById(cid);
         return result;
     }
 
-    addProductToCart = async(cid, pid, quantity) => {
+    async addProductToCart(cid, pid, quantity) {
         let cart = await cartsModel.findById(cid);
-        let product = cart.products.find((product) => product.product.toString() === pid);
+        let product = cart.products.find(product => product.product.toString() === pid);
 
         if(product) {
             product.quantity += quantity;
@@ -28,7 +26,7 @@ class CartManager {
         return await cart.save();
     }
 
-    deleteProduct = async(cid, pid) => {
+    async deleteProduct(cid, pid) {
         let cart = await cartsModel.findById(cid);
         let product = cart.products.findIndex((product) => product.product.toString() === pid);
     

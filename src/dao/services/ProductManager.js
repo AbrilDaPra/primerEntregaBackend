@@ -1,36 +1,34 @@
 import productsModel from '../models/products.model.js';
 
 class ProductManager {
-    constructor(){
+    constructor(){}
 
-    }
-
-    getProducts = async(limit) => {
+    async getProducts(limit) {
         let result = await productsModel.find().limit(limit);
         return result;
     }
 
-    getProductsById = async(id) => {
+    async getProductsById(id) {
         let result = await productsModel.findById(id);
         return result;
     }
 
-    getByBrand = async() => {
+    async getByBrand(brand) {
         let result = await productsModel.find({brand: brand});
         return result;
     }
 
-    addProduct = async(product) => {
+    async addProduct(product) {
         let result = await productsModel.create(product);
         return result;
     }
 
-    updateProduct = async(id, product) => {
-        let result = await productsModel.updateOne({_id: id}, {$set: productData});
+    async updateProduct(id, product) {
+        let result = await productsModel.updateOne({_id: id}, {$set: product});
         return result;
     }
 
-    deleteProduct = async(id) => {
+    async deleteProduct(id) {
         let result = await productsModel.deleteOne({_id: id});
         return result;
     }  

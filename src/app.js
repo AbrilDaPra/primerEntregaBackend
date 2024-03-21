@@ -1,16 +1,14 @@
 import express from 'express';
 import handlebars from 'express-handlebars';
 import { Server as WebsocketServer} from 'socket.io';
-import http from 'http';
 import path from 'path';
 import __dirname from './utils.js';
-import Sockets from './socketServer.js';
 import { connectDB } from './db.js';
 import ProductManager from '../src/dao/services/ProductManager.js';
 import productsRouter from './routes/products.router.js';
 import cartsRouter from './routes/carts.router.js';
 import viewsRouter from './routes/views.router.js';
-import studentsRouter from './routes/students.router.js';
+import Message from './dao/models/messages.model.js';
 
 //Conexión a base de datos MongoDB (archivo db.js)
 connectDB();
@@ -33,33 +31,43 @@ app.set('view engine', 'handlebars');
 app.use('/api/products/', productsRouter);
 app.use('/api/carts/', cartsRouter);
 app.use('/', viewsRouter);
-app.use(studentsRouter);
 
-//Creo servidor HTTP utilizando Express
-//Instancio el server para poder pasarle app a IO indirectamente
-const server = http.createServer(app);
-const httpServer = server.listen(port);
+//Arranco servidor HTTP utilizando Express
+const server = app.listen(port, () => {
+    console.log("Server listening on port:", port)
+});
 
 //Instanciando socket.io
-const io = new WebsocketServer(httpServer);
-Sockets(io);
+const io = new WebsocketServer(server);
 
-// const productManager = new ProductManager();
+//Defino arreglo msg vacío
+const msg = []
+
+const productManager = new ProductManager();
+
 //Manejo de eventos WebSocket
-// io.on('connection', async (socket) => {
-//     console.log("Connected!");
-//     socket.on('message', (data) => {
-//         console.log(data);
-//     });
-//     const products = await productManager.getProducts();
-//     socket.emit('products', products);
-// })
+io.on('connection', async (socket) => {
+    console.log("Connected!");
+
+    //Manejador de eventos para mensajes
+    socket.on('generalMessage', (data) => {
+        console.log("General Message:", data);
+    });
+
+    //Obtener productos y enviarlos al cliente
+    const products = await productManager.getProducts();
+    socket.emit('products', products);
+
+    //Manejador de eventos para el chat
+    socket.on("message", async (data)=> {
+        const newMessage = new Message({ user: data.user, message: data.message });
+        await newMessage.save();
+
+        const messages = await Message.find();
+        io.emit('messageLogs', messages);
+    })
+})
 
 export { io };
-
-//Arranco el servidor HTTP
-// server.listen(port, () => {
-//     console.log("Server listening on port:", port);
-// });
 
 export default app;

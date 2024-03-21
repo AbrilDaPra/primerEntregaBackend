@@ -38,8 +38,7 @@ const schema = new Schema({
         require: true
     },
     thumbnails: {
-        type: [String],
-        require: true
+        type: [String]
     }
 })
 
