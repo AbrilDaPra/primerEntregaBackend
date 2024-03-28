@@ -33,10 +33,21 @@ router.get('/:cid/', async (req, res) => {
 //(POST) Agregar un producto nuevo al carrito seleccionado
 router.post('/:cid/product/:pid', async (req, res) => {
     try{
-        const pid = req.params.pid;
-        const cid = req.params.cid;
-        const result = await cartManager.addProductToCart(cid, pid);
-        res.json(result);
+        const { pid, cid } = req.params;
+
+        //Verifico si el carrito existe
+        let cart = await CartsModel.findById(cid);
+        if (!cart) {
+            return res.status(404).json({ error: 'Cart not found' });
+        }
+
+        //Agrego el producto al carrito
+        cart.products.push({ product: pid, quantity: 1 });
+
+        //Guardo el carrito actualizado en la base de datos
+        await cart.save();
+
+        res.json({ message: 'Product added to cart successfully' });
     } catch(error){
         res.status(500).json({ error: 'Internal server error' });
     }
@@ -45,8 +56,7 @@ router.post('/:cid/product/:pid', async (req, res) => {
 //(DELETE) Eliminar un producto del carrito
 router.delete('/:cid/products/:pid', async (req, res) => {
     try{
-        const pid = req.params.pid;
-        const cid = req.params.cid;
+        const { pid, cid } = req.params;
 
         //Busco el carrito por su id
         const cart = await CartsModel.findById(cid);
