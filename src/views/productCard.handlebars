@@ -1,29 +1,32 @@
 {{#if isValid}}
-    <h2>Products list</h2>
+    <h2>Product details</h2>
     <hr>
     <div>
-        {{#each docs}}
+        {{#each products}}
             <div>
-                <p>
+                <img src="/img/{{Product.image}}" alt={{Product.title}}>
+                <h2>
                     <strong>Title:</strong>
-                    {{this.title}}
+                    {{Product.title}}
                     &nbsp;
+                </h2>
+                <h3>
                     <strong>Description:</strong>
-                    {{this.description}}
-                </p>
+                    {{Product.description}}
+                </h3>
                 <p>
                     <strong>Code:</strong>
-                    {{this.code}}
+                    {{Product.code}}
                     &nbsp;
                     <strong>Category:</strong>
-                    {{this.category}}
+                    {{Product.category}}
                 </p>
                 <p>
                     <strong>Price:</strong>
-                    {{this.price}}
+                    {{Product.price}}
                     &nbsp;
                     <strong>Thumbnails:</strong>
-                    {{this.thumbnails}}
+                    {{Product.thumbnails}}
                 </p>
             </div>
             <br />
@@ -33,13 +36,13 @@
     <hr>
     <div>
         {{#if hasPrevPage}}
-            <a href="{{this.prevLink}}"><< Previous page</a>
+            <a href="{{Product.prevLink}}"><< Previous page</a>
         {{/if}}
         &nbsp;
-        {{this.page}}
+        {{Product.page}}
         &nbsp;
         {{#if hasNextPage}}
-            <a href="{{this.nextLink}}">Next page >></a>
+            <a href="{{Product.nextLink}}">Next page >></a>
         {{/if}}
     </div>
 {{else}}

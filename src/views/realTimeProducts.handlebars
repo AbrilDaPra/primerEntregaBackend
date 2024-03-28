@@ -1,6 +1,18 @@
-<div>
-    <h1>Products list in real time</h1>
-    <ul id="realTimeProducts"></ul>
-</div>
+<h1>Products in real time</h1>
+
+<form action="/addProduct" method="POST" id="addProductForm">
+        <input type="text" name="title" placeholder="Title" required>
+        <input type="text" name="description" placeholder="Description" required>
+        <input type="number" name="code" placeholder="Code" required>
+        <input type="text" name="category" placeholder="Category" required>
+        <input type="text" name="brand" placeholder="Brand" required>
+        <input type="number" name="price" placeholder="Price" required>
+        <input type="number" name="stock" placeholder="Stock" required>
+        <input type="text" name="status" placeholder="Status" required>
+        <button type="submit" class="btn-add-product">Add Product</button>
+</form>
+
+
+    
 <script src="/socket.io/socket.io.js"></script>
-<script src="/js/main.js"></script>
+<script src="/js/realTimeProducts.js"></script>
