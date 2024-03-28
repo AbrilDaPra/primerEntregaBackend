@@ -32,6 +32,26 @@ router.get('/products', async (req, res) => {
     }
 });
 
+//Ruta para visualizar un carrito especifico
+router.get('/carts/:cid', async (req, res) => {
+    try {
+        const cartId = req.params.cid;
+
+        //Busco el carrito en la DB
+        const cart = await CartsModel.findById(cartId).populate('products.product');
+
+        if (!cart) {
+            return res.status(404).json({ error: 'Cart not found' });
+        }
+
+        //Renderizo la vista para mostrar el carrito y sus productos
+        res.render('cart', { cart });
+    } catch (error) {
+        console.error('Error fetching cart:', error);
+        res.status(500).json({ error: 'Internal server error while trying to show cart' });
+    }
+});
+
 //Ruta para mostrar detalles completos del producto
 router.get('/products/:productId', async (req, res) => {
     try{
