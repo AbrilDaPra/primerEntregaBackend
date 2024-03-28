@@ -3,13 +3,11 @@
     <h2>Products list</h2>
     <ul>
         {{#each products}}
-            <li>{{title}} - 
-                {{description}} - 
-                {{code}} - 
-                {{price}} - 
-                {{status}} - 
-                {{stock}} - 
-                {{category}}
+            <li>
+                <h2>{{title}}</h2>
+                <p>Description: {{description}}</p>
+                <p>Price: {{price}}</p>
+                <img src={{thumbnail}} alt={{title}}>
             </li>
         {{/each}}
     </ul>

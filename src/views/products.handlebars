@@ -1,0 +1,57 @@
+{{#if isValid}}
+    <h2>Products list</h2>
+    <hr>
+    <div>
+        {{#each docs}}
+            <div>
+                <p>
+                    <strong>Title:</strong>
+                    {{this.title}}
+                    &nbsp;
+                    <strong>Description:</strong>
+                    {{this.description}}
+                </p>
+                <p>
+                    <strong>Code:</strong>
+                    {{this.code}}
+                    &nbsp;
+                    <strong>Category:</strong>
+                    {{this.category}}
+                </p>
+                <p>
+                    <strong>Price:</strong>
+                    {{this.price}}
+                    &nbsp;
+                    <strong>Thumbnails:</strong>
+                    {{this.thumbnails}}
+                </p>
+            </div>
+            <br />
+        {{/each}}
+    </div>
+    <br />
+    <hr>
+    <div>
+        {{#if hasPrevPage}}
+            <a href="{{this.prevLink}}"><< Previous page</a>
+        {{/if}}
+        &nbsp;
+        {{this.page}}
+        &nbsp;
+        {{#if hasNextPage}}
+            <a href="{{this.nextLink}}">Next page >></a>
+        {{/if}}
+    </div>
+{{else}}
+<h2>No products founded.</h2>
+
+
+{{#each products}}
+    <div>
+        <h2>{{title}}</h2>
+        <p>{{description}}</p>
+        <p>Price: {{price}}</p>
+        <p>Category: {{category}}</p>
+        <button type="submit">Add to cart</button>
+    </div>
+{{/each}}

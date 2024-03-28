@@ -10,9 +10,6 @@ import cartsRouter from './routes/carts.router.js';
 import viewsRouter from './routes/views.router.js';
 import Message from './dao/models/messages.model.js';
 
-//Conexión a base de datos MongoDB (archivo db.js)
-connectDB();
-
 const app = express();
 const port = process.env.PORT || 8080;
 
@@ -32,10 +29,13 @@ app.use('/api/products/', productsRouter);
 app.use('/api/carts/', cartsRouter);
 app.use('/', viewsRouter);
 
-//Arranco servidor HTTP utilizando Express
+//Arranco servidor HTTP utilizando Express y listener
 const server = app.listen(port, () => {
-    console.log("Server listening on port:", port)
+    console.log("Server listening on port:", port);
 });
+
+//Conexión a base de datos MongoDB (archivo db.js)
+connectDB();
 
 //Instanciando socket.io
 const io = new WebsocketServer(server);

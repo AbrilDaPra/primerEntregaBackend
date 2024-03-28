@@ -1,6 +1,6 @@
+import productsModel from '../dao/models/products.model.js';
 import ProductManager from '../dao/services/ProductManager.js';
 import express from 'express';
-// import { io } from '../app.js';
 
 const router = express.Router();
 const productManager = new ProductManager();
@@ -8,11 +8,52 @@ const productManager = new ProductManager();
 //(GET) Mostrar todos los productos
 router.get('/', async (req, res) => {
     try{
-        const limit = req.query.limit;
-        const data = await productManager.getProducts(limit);
-        res.json(data);
+        //Parseo los parametros de consulta
+        const { limit = 10, page = 1, sort, query, category, available } = req.query;
+
+        //Opciones para la consulta a la DB
+        const options = {
+            limit: parseInt(limit),
+            skip: (parseInt(page) - 1) * parseInt(limit),
+            sort: sort ? { price: sort === 'asc' ? 1 : -1 } : null,
+            filter: {}
+        };
+
+        //Agrego filtro por categoria
+        if(category) {
+            options.filter.category = category;
+        }
+
+        //Agrego filtro por disponibilidad
+        if(available) {
+            options.filter.status = available === 'true' ? true : false;
+        }
+
+        //Consulta a la DB con paginacion
+        const products = await productsModel.paginate({}, options);
+
+        //Calculo el total de paginas
+        const totalPages = Math.ceil(products.total / options.limit);
+
+        //Calculo el total de las paginas
+        const response = {
+            status: 'success',
+            payload: products.docs,
+            totalPages: totalPages,
+            prevPage: products.prevPage,
+            nextPage: products.nextPage,
+            page: products.page,
+            hasPrevPage: products.hasPrevPage,
+            hasNextPage: products.hasNextPage,
+            prevLink: products.hasPrevPage ? `/products?page=${products.prevPage}` : null,
+            nextLink: products.hasNextPage ? `/products?page=${products.nextPage}` : null
+        }
+
+        //Devuelvo los productos al cliente en JSON
+        res.status(200).json(response);
     } catch(error){
-        res.status(500).json({ error: 'Internal server error' });
+        console.error('Error trying to get products:', error);
+        res.status(500).json({ error: 'Internal server error occurred while fetching products.' });
     }
 });
 
