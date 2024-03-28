@@ -1,5 +1,7 @@
 import productsModel from '../models/products.model.js';
 
+//agregar try catch
+// usar const y retornar las variables
 class ProductManager {
     constructor(){}
 

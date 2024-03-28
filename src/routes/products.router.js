@@ -57,65 +57,76 @@ router.get('/', async (req, res) => {
     }
 });
 
-//(GET) Mostrar producto que coincida con :pid
+//(GET) Mostrar producto que coincida con :id
 router.get('/:id', async (req, res) => {
     try{
         const productId = req.params.id;
-        const result = await productManager.getProductsById(productId);
-        res.json(result);
+        const product = await productsModel.findById(productId);
+        if (!product) {
+            return res.status(404).json({ error: 'Product not found' });
+        }
+        res.json(product);
     } catch(error){
-        res.status(500).json({ error: 'Internal server error' });
+        res.status(500).json({ error: 'Internal server error while trying to show product' });
     }
 });
 
 //(GET) Mostrar producto que coincida con la marca
-router.get('/brand', async (req, res) => {
-    try{
-        const productBrand = req.query.brand;
-        const result = await productManager.getByBrand(productBrand);
-        res.json(result);
-    } catch(error){
-        res.status(500).json({ error: 'Internal server error' });
-    }
-});
+// router.get('/brand', async (req, res) => {
+//     try{
+//         const productBrand = req.query.brand;
+//         const result = await productManager.getByBrand(productBrand);
+//         res.json(result);
+//     } catch(error){
+//         res.status(500).json({ error: 'Internal server error' });
+//     }
+// });
 
 //(POST) Crear producto nuevo
 router.post('/', async (req, res) => {
     try{
-        // const {title, description, code, category, brand, price, stock, status, thumnails} = req.body;
         const newProduct = req.body;
-        const result = await productManager.addProduct(newProduct);
-        res.json(result);
+        const product = await productsModel.create(newProduct);
+        res.status(201).json(product);
     } catch(error){
         if(error.name === 'ValidationError') {
             const missingFields = Object.keys(error.errors).join(', ');
             const errorMessage = `Missing required fields: ${missingFields}`;
             res.status(400).json({ error: errorMessage });
         }
-        res.status(500).json({ error: 'Internal server error' });
+        console.error('Error creating product:', error);
+        res.status(500).json({ error: 'Internal server error while creating new product' });
     }
 });
 
-//(PUT) Editar producto que coincida con :pid
-router.put('/:pid/', async (req, res) => {
+//(PUT) Editar producto que coincida con :id
+router.put('/:id/', async (req, res) => {
     try{
-        const productId = req.params.pid;
+        const productId = req.params.id;
         const updatedFields = req.body;
-        const updatedProduct = await productManager.updateProduct(productId, updatedFields);
+        const updatedProduct = await productsModel.findByIdAndUpdate(productId, updatedFields, { new: true });
+        if (!updatedProduct) {
+            return res.status(404).json({ error: 'Product not found' });
+        }
         res.json(updatedProduct);
     } catch(error){
-        res.status(500).json({ error: 'Internal server error' });
+        console.error('Error updating product:', error);
+        res.status(500).json({ error: 'Internal server error while updating product' });
     } 
 });
 
 //(DELETE) Eliminar producto que coincida con :pid
-router.delete('/:pid/', async (req, res) => {
+router.delete('/:id/', async (req, res) => {
     try{
-        const productId = req.params.pid;
-        let result = await productManager.deleteProduct(productId);
-        res.json(result);
+        const productId = req.params.id;
+        const deletedProduct = await productsModel.findByIdAndDelete(productId);
+        if (!deletedProduct) {
+            return res.status(404).json({ error: 'Product not found' });
+        }
+        res.json({ message: 'Product deleted successfully' });
     } catch(error){
-        res.status(500).json({ error: 'Internal server error' });
+        console.error('Error deleting product:', error);
+        res.status(500).json({ error: 'Internal server error while trying to delete product' });
     } 
 });
 

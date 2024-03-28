@@ -10,20 +10,68 @@ router.get('/', (req, res) => {
     res.render('home');
 });
 
+//Ruta para mostrar todos los productos con paginacion
 router.get('/products', async (req, res) => {
-    //El query porque va cambiando en el link ?limit=4
-    let page = parseInt(req.query.page);
-    //Si no hay página, trae la primera
-    if(!page) page = 1;
-    const result = await productsModel.paginate({}, {page, limit: 4, lean: true});
-    console.log(result);
+    try{
+        //Pagina por defecto
+        let page = parseInt(req.query.page) || 1;
+        //Cantidad de productos por pagina
+        const limit = 10;
+        
+        //Consulto productos desde la DB con paginacion
+        const result = await productsModel.paginate({}, { page, limit, lean: true });
+        
+        //Determino si hay una pagina siguiente y su enlace correspondiente
+        const nextPage = result.hasNextPage ? `/products?page=${result.nextPage}` : null;
 
-    //Variable boolean (true or false)
-    result.isValid = page >= 1 && page <= result.totalPages;
-    result.nextLink = result.hasNextPage ? `http://localhost:8080/products?page=${result.nextPage}` : "";
+        //Renderizo la vista 'products' y paso los datos de los productos
+        res.render('products', {products: result.docs, nextPage});
+    } catch(error) {
+        console.error('Error fetching products:', error);
+        res.status(500).json({ error: 'Internal server error while trying to show products' });
+    }
+});
 
-    res.render('products', {result});
-})
+//Ruta para mostrar detalles completos del producto
+router.get('/products/:productId', async (req, res) => {
+    try{
+        const productId = req.params.productId;
+        //Consulto el producto desde la DB por su ID
+        const product = await productsModel.findById(productId);
+        if (!product) {
+            return res.status(404).json({ error: 'Product not found' });
+        }
+        //Renderizo la vista 'productDetails' y paso los detalles del producto
+        res.render('productDetails', { product });
+    } catch (error) {
+        console.error('Error fetching product details:', error);
+        res.status(500).json({ error: 'Internal server error while trying to show product details' });
+    }
+});
+
+//Ruta para agregar un producto al carrito directamente
+router.post('/products/:productId/add-to-cart', async (req, res) => {
+    try {
+        const productId = req.params.productId;
+        //Verifico si existe un carrito activo, sino lo creo
+        let userCart = await CartModel.findOne({ active: true });
+        if (!userCart) {
+            userCart = new CartModel({ products: [] });
+        }
+
+        //Agrego el producto al carrito
+        userCart.products.push({ product: productId, quantity: 1 });
+
+        //Guardo el carrito actualizado en la base de datos
+        await userCart.save();
+
+        //Mensaje de exito
+        res.json({ message: 'Product added to cart successfully' });
+    } catch (error) {
+        console.error('Error adding product to cart:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
 
 router.get('/realtimeproducts', (req, res) => {
     //Aca lo renderizo en home

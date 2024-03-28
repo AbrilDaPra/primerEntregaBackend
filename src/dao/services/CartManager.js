@@ -1,5 +1,6 @@
 import cartsModel from '../models/carts.model.js';
 
+//agregar try catch
 class CartManager {
     constructor(){}
 
