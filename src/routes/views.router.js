@@ -1,11 +1,12 @@
 import { Router } from 'express';
+import { auth } from "../middlewares/auth.js";
 import productsModel from '../dao/models/products.model.js';
 
 const router = Router();
 //Este archivo es para manejar las solicitudes de las vistas y redireccionarlas
 //SIN LOGICA DE APLICACION O MANIPULACIÓN DE DATOS
 
-router.get('/', (req, res) => {
+router.get('/', async (req, res) => {
     //Aca lo renderizo en home
     res.render('home');
 });
@@ -100,6 +101,20 @@ router.get('/realtimeproducts', (req, res) => {
 
 router.get('/chat', (req, res) => {
     res.render('chat');
-})
+});
+
+router.get("/register", (req, res) => {
+  res.render("register");
+});
+
+router.get("/login", (req, res) => {
+  res.render("login");
+});
+
+router.get("/", auth ,(req, res) => {
+  res.render("profile", {
+    user: req.session.user,
+  });
+});
 
 export default router;

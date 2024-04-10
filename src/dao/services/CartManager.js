@@ -1,12 +1,12 @@
-import cartsModel from '../models/carts.model.js';
+import Cart from '../models/carts.model.js';
 
 class CartManager {
     constructor(){}
 
     async createCart() {
         try {
-            let result = await cartsModel.create({});
-            return result;
+            const newCart = await Cart.create({});
+            return newCart;
         } catch (error) {
             throw new Error('Error creating cart: ' + error.message);
         }
@@ -14,8 +14,8 @@ class CartManager {
 
     async getCartById(cid) {
         try {
-            let result = await cartsModel.findById(cid);
-            return result;
+            const cart = await Cart.findById(cid).populate('products');
+        return cart;
         } catch (error) {
             throw new Error('Error fetching cart by ID: ' + error.message);
         }
@@ -23,7 +23,11 @@ class CartManager {
 
     async addProductToCart(cid, pid, quantity) {
         try {
-            let cart = await cartsModel.findById(cid);
+            let cart = await Cart.findById(cid);
+            if (!cart) {
+                throw new Error('Cart not found');
+            }
+
             let product = cart.products.find(product => product.product.toString() === pid);
 
             if(product) {
@@ -40,18 +44,31 @@ class CartManager {
 
     async deleteProduct(cid, pid) {
         try {
-            let cart = await cartsModel.findById(cid);
+            let cart = await Cart.findById(cid);
+            if (!cart) {
+                throw new Error('Cart not found');
+            }
+
             let productIndex = cart.products.findIndex((product) => product.product.toString() === pid);
         
             if(productIndex === -1) {
-                console.log("Product not found");
-            } else {
-                cart.products.splice(productIndex, 1);
+                throw new Error('Product not found in cart');
             }
+
+            cart.products.splice(productIndex, 1);
     
             return await cart.save();
         } catch (error) {
             throw new Error('Error deleting product from cart: ' + error.message);
+        }
+    }
+
+    async updateCart(cid, cart) {
+        try{
+            const updatedCart = await Cart.findByIdAndUpdate(cid, cart, { new: true });
+            return updatedCart;
+        } catch (error) {
+            throw new Error('Error updating cart: ' + error.message);
         }
     }
 }

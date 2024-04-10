@@ -1,9 +1,34 @@
 <h1>Shopping cart</h1>
+
+<table>
+    <thead>
+        <tr>
+            <th>Product</th>
+            <th>Price</th>
+            <th>Quantity</th>
+            <th>Total</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        {{#each cart.products}}
+            <tr>
+                <td>{{this.name}}</td>
+                <td>${{this.price}}</td>
+                <td>{{this.quantity}}</td>
+                <td>${{this.total}}</td>
+                <td><button onclick="deleteProductFromCart('{{this._id}}')">Delete</button></td>
+            </tr>
+        {{/each}}
+    </tbody>
+</table>
+
 <div>
-    <p>Product</p>
-    <p>Price</p>
-    <p>Quantity</p>
-    <p>Total</p>
+    <h6>Your order:</h6>
+    <p>Products total: {{cart.products.length}}</p>
+    <p>Total: ${{cart.total}}</p>
+    <a href="/api/products/realtimeproducts"><button>Back to products</button></a>
 </div>
 
 <script src="/socket/io/socket.io.js"></script>
+<script src="/js/cart.js"></script>

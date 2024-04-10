@@ -9,9 +9,9 @@ const cartManager = new CartManager();
 router.post('/', async (req, res) => {
     try{
         const newCart = await cartManager.createCart();
-        res.json(newCart);
+        res.status(201).json(newCart);
     } catch(error){
-        res.status(500).json({ error: 'Internal server error' });
+        res.status(500).json({ error: 'Internal server error while trying to create a new cart' });
     }
 });
 
@@ -19,14 +19,14 @@ router.post('/', async (req, res) => {
 router.get('/:cid/', async (req, res) => {
     try{
         const { cid } = req.params;
-        const cart = await CartsModel.findById(cid).populate('products');
+        const cart = await cartManager.getCartById(cid);
         if (!cart) {
             return res.status(404).json({ error: 'Cart not found' });
         }
         res.json(cart);
     } catch(error){
         console.error('Error fetching cart:', error);
-        res.status(500).json({ error: 'Internal server error' });
+        res.status(500).json({ error: 'Internal server error while trying to show products in cart' });
     }
 })
 
@@ -34,22 +34,13 @@ router.get('/:cid/', async (req, res) => {
 router.post('/:cid/product/:pid', async (req, res) => {
     try{
         const { pid, cid } = req.params;
+        const { quantity } = req.body;
 
-        //Verifico si el carrito existe
-        let cart = await CartsModel.findById(cid);
-        if (!cart) {
-            return res.status(404).json({ error: 'Cart not found' });
-        }
-
-        //Agrego el producto al carrito
-        cart.products.push({ product: pid, quantity: 1 });
-
-        //Guardo el carrito actualizado en la base de datos
-        await cart.save();
-
-        res.json({ message: 'Product added to cart successfully' });
+        const updatedCart = await cartManager.addProductToCart(cid, pid, quantity || 1);
+        res.json({ message: 'Product added to cart successfully', updatedCart });
     } catch(error){
-        res.status(500).json({ error: 'Internal server error' });
+        console.error('Error adding product to cart:', error);
+        res.status(500).json({ error: 'Internal server error while trying to add product to cart' });
     }
 });
 
@@ -57,27 +48,8 @@ router.post('/:cid/product/:pid', async (req, res) => {
 router.delete('/:cid/products/:pid', async (req, res) => {
     try{
         const { pid, cid } = req.params;
+        const updatedCart = await cartManager.deleteProduct(cid, pid);
 
-        //Busco el carrito por su id
-        const cart = await CartsModel.findById(cid);
-        //Si no encuentro el carrito
-        if(!cart) {
-            return res.status(404).json({ error: ' Cart not found' });
-        }
-        //Encuentro el index del producto en productos
-        const productIndex = cart.products.findIndex(product => product.product.toString() === pid);
-        
-        //Si no encuentro el producto dentro del carrito
-        if(productIndex === -1) {
-            return res.status(404).json({ error: 'Product not found in cart' });
-        }
-
-        //Elimino el producto del carrito
-        cart.products.splice(productIndex, 1);
-        
-        //Guardo los cambios en la DB
-        await cart.save();
-        
         //Respondo con exito
         res.status(204).send();
     } catch(error){
@@ -91,11 +63,18 @@ router.put('/:cid', async (req, res) => {
     try {
         const { cid } = req.params;
         const { products } = req.body;
-        const cart = await CartsModel.findByIdAndUpdate(cid, { products }, { new: true });
+        
+        //Verifico si el cart existe
+        const cart = await cartManager.getCartById(cid);
         if (!cart) {
             return res.status(404).json({ error: 'Cart not found' });
         }
-        res.json(cart);
+
+        //Actualizo los productos del carrito
+        cart.products = products;
+        const updatedCart = await cartManager.updateCart(cid, cart);
+
+        res.json(updatedCart);
       } catch (error) {
         console.error('Error updating cart:', error);
         res.status(500).json({ error: 'Internal server error while trying to update cart with products' });
@@ -107,16 +86,26 @@ router.put('/:cid/products/:pid', async (req, res) => {
     try {
         const { cid, pid } = req.params;
         const { quantity } = req.body;
-        const cart = await CartsModel.findById(cid);
+
+        //Verifico si el cart existe
+        const cart = await cartManager.getCartById(cid);
         if (!cart) {
             return res.status(404).json({ error: 'Cart not found' });
         }
-        const productIndex = cart.products.findIndex(p => p._id.toString() === pid);
+        
+        //Encuentro el index del producto en el cart
+        const productIndex = cart.products.findIndex(product => product._id.toString() === pid);
         if (productIndex === -1) {
             return res.status(404).json({ error: 'Product not found in cart' });
         }
+
+        //Actualizo la cantidad del producto en el cart
         cart.products[productIndex].quantity = quantity;
-        await cart.save();
+
+        //Guardo el cart actualizado en la DB
+        await cartManager.updateCart(cid, cart);
+
+        //Respondo con el cart actualizado
         res.json(cart);
     } catch (error) {
         console.error('Error updating product quantity in cart:', error);
@@ -128,54 +117,19 @@ router.put('/:cid/products/:pid', async (req, res) => {
 router.delete('/:cid', async (req, res) => {
     try {
         const { cid } = req.params;
-        const cart = await CartsModel.findByIdAndDelete(cid);
-        if (!cart) {
+
+        //Busco y elimino el cart por su ID
+        const deletedCart = await cartManager.deleteCart(cid);
+        if (!deletedCart) {
             return res.status(404).json({ error: 'Cart not found' });
         }
+
+        //Respondo con mensaje de exito
         res.json({ message: 'Cart deleted successfully' });
   } catch (error) {
         console.error('Error deleting cart:', error);
         res.status(500).json({ error: 'Internal server error while trying to delete cart' });
   }
 });
-
-// router.post('/', async (req, res) => {
-//     //(POST) Crear un nuevo carrito
-//     try{
-//         const newCart = await cartManager.createCart();
-//         res.status(201).send(newCart);
-//     } catch (err) {
-//         console.error("Error creating cart:", err);
-//         res.status(500).send({ error: "Internal Server Error." });
-//     }
-// });
-
-// router.get('/:cid/', async (req, res) => {
-//     //(GET) Listar los productos del carrito que corresponda a su id de carrito
-//     try{
-//         const cid = req.params.cid;
-//         const cartProducts = await cartManager.getCartById(cid);
-//         res.send(cartProducts);
-//     } catch (err) {
-//         console.error("Error loading cart products:", err);
-//         res.status(404).send({ error: err.message });
-//     }
-// });
-
-// router.post('/:cid/product/:pid', async (req, res) => {
-//     //(POST) Agregar un producto nuevo al carrito seleccionado
-//     try{
-//         //Obtengo el id de producto y carrito
-//         const pid = req.params.pid;
-//         const cid = req.params.cid;
-
-//         const message = await cartManager.addProductToCart(cid, pid);
-//         // io.emit('productAddedToCart', { cartId: cid, productId: pid });
-//         res.send({ message });
-//     } catch (err) {
-//         console.error("Error adding product to cart:", err);
-//         res.status(404).send({ error: err.message });
-//     }
-// });
 
 export default router;

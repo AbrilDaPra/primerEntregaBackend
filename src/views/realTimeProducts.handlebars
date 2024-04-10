@@ -1,18 +1,112 @@
 <h1>Products in real time</h1>
 
-<form action="/addProduct" method="POST" id="addProductForm">
-        <input type="text" name="title" placeholder="Title" required>
-        <input type="text" name="description" placeholder="Description" required>
-        <input type="number" name="code" placeholder="Code" required>
-        <input type="text" name="category" placeholder="Category" required>
-        <input type="text" name="brand" placeholder="Brand" required>
-        <input type="number" name="price" placeholder="Price" required>
-        <input type="number" name="stock" placeholder="Stock" required>
-        <input type="text" name="status" placeholder="Status" required>
-        <button type="submit" class="btn-add-product">Add Product</button>
-</form>
+<div class="container">
+    {{#if (eq user.role "admin")}}
+        <div class="success">
+            Welcome admin, {{user.first_name}} {{user.last_name}}!
+        </div>
+    {{/if}}
+
+    {{#if (eq user.role "user")}}
+        <div class="success">
+            Welcome user, {{user.first_name}} {{user.last_name}}!
+        </div>
+    {{/if}}
+</div>
 
 
-    
+{{#if isLogedIn}}
+    <div class="container">
+            <form action="/addProduct" method="POST" id="addProductForm">
+                    <div>
+                            <label for="title">Title:</label>
+                            <input type="text" id="title" name="title" placeholder="Title" required>
+                    </div>
+                    <div>
+                            <label for="description">Description:</label>
+                            <textarea id="description" name="description" placeholder="Description" required></textarea>
+                    </div>
+                    <div>
+                            <label for="price">Price:</label>
+                            <input type="number" id="price" name="price" step="0.01" placeholder="Price" required>
+                    </div>
+                    <div>
+                            <label for="brand">Brand:</label>
+                            <input type="text" id="brand" name="brand" placeholder="Brand" required>
+                    </div>
+                    <div>
+                            <label for="stock">Stock:</label>
+                            <input type="number" id="stock" name="stock" placeholder="Stock" required>
+                    </div>
+                    <div>
+                            <label for="image">Image URL:</label>
+                            <input type="url" id="image" name="image" placeholder="Image" required>
+                    </div>
+                    <div>
+                            <label for="category">Category:</label>
+                            <select id="category" name="category" required>
+                                    <option value="sweaters">Sweaters</option>
+                                    <option value="cups">Cups</option>
+                                    <option value="backpacks">Backpacks</option>
+                                    <option value="pijamas">Pijamas</option>
+                            </select>
+                    </div>
+                    <button type="submit" class="btn-add-product">Add Product</button>
+            </form>
+    </div>
+{{/if}}
+
+{{!-- Filtro por categoria --}}
+<div>
+    <label for="categoryFilter">Filter by category:</label>
+    <select id="categoryFilter" name="categoryFilter">
+        <option value="">All categories</option>
+        <option value="sweaters">Sweaters</option>
+        <option value="cups">Cups</option>
+        <option value="backpacks">Backpacks</option>
+        <option value="pijamas">Pijamas</option>
+    </select>
+    <button onclick="applyCategoryFilter()">Apply Filter</button>
+</div>
+
+{{!-- Orden segun su precio --}}
+<div>
+    <label for="priceSort">Sort by price:</label>
+    <select id="priceSort" name="priceSort">
+        <option value="asc">Low to High</option>
+        <option value="desc">High to Low</option>
+    </select>
+    <button onclick="applyPriceSort()">Apply Sort</button>
+</div>
+
+{{!-- Lista de todos los productos --}}
+<div id="productList">
+    {{#each products}}
+    <div class="product">
+        <img src="{{image}}" alt="{{title}}" class="product-image">
+        <div class="product-details">
+            <h2>{{title}}</h2>
+            <p>{{description}}</p>
+            <p>Price: ${{price}}</p>
+            <p>Category: {{category}}</p>
+            <button onclick="viewDetails('{{_id}}')">View Details</button>
+            <button onclick="deleteProduct('{{_id}}')">Delete Product</button>
+            <button onclick="addToCart('{{_id}}')">Add to Cart</button>
+        </div>
+    </div>
+    {{/each}}
+</div>
+
+{{!-- Paginacion --}}
+<div class="pagination">
+    {{#if hasPreviousPage}}
+        <button onclick="previousPage()">Previous</button>
+    {{/if}}
+    <span>{{currentPage}} / {{totalPages}}</span>
+    {{#if hasNextPage}}
+        <button onclick="nextPage()">Next</button>
+    {{/if}}
+</div>
+
 <script src="/socket.io/socket.io.js"></script>
 <script src="/js/realTimeProducts.js"></script>
