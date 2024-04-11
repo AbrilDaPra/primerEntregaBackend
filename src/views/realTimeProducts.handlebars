@@ -1,15 +1,23 @@
 <h1>Products in real time</h1>
 
+<button id="logoutButton">Log out</button>
+
 <div class="container">
     {{#if (eq user.role "admin")}}
         <div class="success">
             Welcome admin, {{user.first_name}} {{user.last_name}}!
+        </div>
+        <div>
+            {{user.age}} {{user.email}}
         </div>
     {{/if}}
 
     {{#if (eq user.role "user")}}
         <div class="success">
             Welcome user, {{user.first_name}} {{user.last_name}}!
+        </div>
+        <div>
+            {{user.age}} {{user.email}}
         </div>
     {{/if}}
 </div>
@@ -110,3 +118,4 @@
 
 <script src="/socket.io/socket.io.js"></script>
 <script src="/js/realTimeProducts.js"></script>
+<script src="/js/logout.js"></script>

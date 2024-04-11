@@ -14,6 +14,8 @@ form.addEventListener("submit", (e) => {
   }).then((response) => {
     if (response.status === 200) {
       window.location.replace("/realTimeProducts");
+    } else {
+      console.log("Incorrect credentials");
     }
   });
 });
